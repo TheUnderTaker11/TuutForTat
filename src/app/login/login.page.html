@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Login/Register</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+<div id="existingLogin">
+  <p><b>Use Existing Login</b></p>
+  <ion-input class="inputType1" placeholder="Email" #email required></ion-input>
+  <ion-input class="inputType1" placeholder="Password" type="password" #password required></ion-input>
+  <ion-button (click) = "logIn(email, password)">Log In</ion-button>
+</div>
+
+<div class="gap-30"></div>
+<div class="gap-30"></div>
+<div class="gap-30"></div>
+
+<div id="registerNewLogin">
+  <p><b>Register New Account</b></p>
+  <ion-input class="inputType1" type="text" placeholder="Email" #email2 required></ion-input>
+  <ion-input class="inputType1" type="password" placeholder="Password" #password2 required></ion-input>
+
+  <ion-button type="submit" (click)="signUp(email2, password2)">Register</ion-button>
+</div>
+
+<div class="gap-30"></div>
+<div class="gap-30"></div>
+
+<div id="recoverAccount">
+  <p><b>Recover Account/Change Password</b></p>
+  <ion-input class="inputType1" type="text" placeholder="Email" #email3 required></ion-input>
+
+  <ion-button type="submit" (click)="recoverFromEmail(email3)">Send Recovery Email</ion-button>
+</div>
+</ion-content>

@@ -1,0 +1,114 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "~@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "~@ionic/angular/css/normalize.css";
+@import "~@ionic/angular/css/structure.css";
+@import "~@ionic/angular/css/typography.css";
+@import '~@ionic/angular/css/display.css';
+
+/* Optional CSS utils that can be commented out */
+@import "~@ionic/angular/css/padding.css";
+@import "~@ionic/angular/css/float-elements.css";
+@import "~@ionic/angular/css/text-alignment.css";
+@import "~@ionic/angular/css/text-transformation.css";
+@import "~@ionic/angular/css/flex-utils.css";
+
+:root {
+	--message_border_color: black;
+    --link_color: rgb(0, 132, 255);
+}
+
+.hr {
+    border-bottom: 1px solid #ccc;
+    margin: 10px 0;
+    width: 100%;
+}
+#messagesListEntry {
+    border-style: groove;
+    border-width: 2px;
+    border-color: black;
+}
+#recievedMessage {
+    margin-left: 0;
+    margin-right: auto;
+    text-align: left;
+    border: 1px solid var(--message_border_color);
+    border-radius: 25px;
+    padding: 10px;
+    width: 50%;
+    background-color:rgba(177, 177, 177, 0.247);
+}
+
+#sentMessage {
+    margin-left: auto;
+    margin-right: 0;
+    text-align: right;
+    border: 1px solid var(--message_border_color);
+    border-radius: 25px;
+    padding: 10px;
+    width: 50%;
+    background-color:rgba(123, 147, 255, 0.247);
+}
+
+#recievedMessageAlt {
+    padding: 10px;
+    background-color:rgba(177, 177, 177, 0.247);
+}
+
+#sentMessageAlt {
+    padding: 10px;
+    background-color:rgba(123, 147, 255, 0.247);
+}
+
+#link {
+    color: var(--link_color);
+    cursor: pointer;
+}
+
+.inputType1 {
+    border: 1px solid var(--message_border_color);
+    width: 75%;
+}
+.clickable {
+    cursor: pointer;
+}
+
+.messages {
+    height: 90%;
+    overflow-y:auto
+}
+
+.messageInput {
+    border: 1px solid var(--message_border_color);
+    float: left;
+    width:90%;
+}
+
+.settings {
+    padding: 10px;
+}
+
+.gap-10 { 
+    width:100%; 
+    height:10px; 
+} 
+.gap-20 { 
+    width:100%; 
+    height:20px; 
+} 
+.gap-30 { 
+    width:100%; 
+    height:30px; 
+} 

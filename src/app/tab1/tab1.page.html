@@ -1,0 +1,43 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <!--
+    <ion-title>
+      Tutors Hub
+    </ion-title>
+    -->
+    <ion-searchbar placeholder="Search Tutors" inputmode="search"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Tutors Hub </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-list>
+    <ion-list-header>
+      <h1><b>Categories</b></h1>
+    </ion-list-header>
+    <ion-item>
+      <h3>Math</h3>
+      <ion-label></ion-label>
+      <ion-select [(ngModel)]="category" placeholder="Sub-Category" (ionChange)="subCategorySelected()">
+        <ion-select-option value="Calculus">Caclulus</ion-select-option>
+        <ion-select-option value="Trig">Trig</ion-select-option>
+        <ion-select-option value="Algebra">Algebra</ion-select-option>
+      </ion-select>
+      
+    </ion-item>
+    <ion-item>
+      <h3>Science</h3>
+    </ion-item>
+    <ion-item>
+      <h3>Literature</h3>
+    </ion-item>
+    <ion-item>
+      <h3>etc. NOTE: Only Math will ever be functional unless I have extra time</h3>
+    </ion-item>
+  </ion-list>
+</ion-content>
+

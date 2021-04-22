@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-icon (click)="backToTab1()" name="arrow-back-outline" size="large" style="float:left"></ion-icon>
+    <ion-title class="ion-text-wrap" style="float:left">{{category}} Tutors</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="calcpage" *ngIf="isCalc()">
+    <ion-list>
+      <!-- Clay aka Hotmail Boy (hotmail email address) UserID = Dd0XimfNUsO1WL48Qim4u7UlzHz2 -->
+      <ion-item (click)="dmTutor('Dd0XimfNUsO1WL48Qim4u7UlzHz2')" class="clickable">
+        <ion-avatar slot="start">
+          <img src="https://i.pinimg.com/736x/18/3f/f0/183ff0acf8b28cd4a173dd621981cf11.jpg">
+        </ion-avatar>
+        <ion-label class="ion-text-wrap">
+          <b>Clay (Hotmail)</b>
+          <p>I'm gonna teach you so much calc :)</p>
+        </ion-label>
+      </ion-item>
+
+    </ion-list>
+  </div>
+
+  <div class="calcpage" *ngIf="isTrig()">
+    <ion-list>
+      <!-- Clay aka icloud account UserID = ChYLqSdsOEdRIW7cMquQLNXq3oE3 -->
+      <ion-item (click)="dmTutor('ChYLqSdsOEdRIW7cMquQLNXq3oE3')" class="clickable">
+        <ion-avatar slot="start">
+          <img src="./assets/img/loading-icon.jpg">
+        </ion-avatar>
+        <ion-label class="ion-text-wrap">
+          <b>Clay (iCloud)</b>
+          <p>It's trig time baby!</p>
+        </ion-label>
+      </ion-item>
+
+    </ion-list>
+  </div>
+</ion-content>

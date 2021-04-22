@@ -1,0 +1,62 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Account and Settings
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Tab 3</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-button style="width:100%" (click) = "authService.SignOut()">Log Out</ion-button>
+
+  <div class="settings">
+    <div class="hr"></div>
+
+    <p>
+      ID: <b>{{userID}}</b>
+    </p>
+    <!-- cabellou@go ID = JxIow3Nou7hHEwkWQ2zIENwpAEo1 -->
+    <p>
+      (Send this to someone you want to have start DM'ing you!)
+    </p>
+    <div class="hr"></div>
+    <p style="display: inline-block;">
+      Username: <b>{{userName}}</b>
+    </p>
+    <ion-icon name="create-outline" size="large" style="display: inline-block; " class="clickable" (click)="editUsername()"></ion-icon>
+    <div class="hr"></div>
+    <p>
+      Email: <b>{{userEmail}}</b>
+    </p>
+
+    <div class="hr"></div>
+
+    <p style="display: inline-block;">
+      Profile Pic:
+    </p>
+    <ion-avatar slot="start" style="display: inline-block;">
+      <img src="{{image}}">
+    </ion-avatar>
+    <ion-icon name="create-outline" size="large" style="display: inline-block; " class="clickable" (click)="editProfilePic()"></ion-icon>
+
+    <div class="hr"></div>
+
+    <p style="display: inline-block; ">Current Location: <b>Oxford MS</b></p> 
+    <ion-icon name="create-outline" size="large" style="display: inline-block; " class="clickable" (click)="editLocation()"></ion-icon>
+    <div class="hr"></div>
+    
+    <p style="display: inline-block; ">Current Radius: <b>10</b> miles </p>
+    <ion-icon name="create-outline" size="large" style="display: inline-block; " class="clickable" (click)="editRadius()"></ion-icon>
+    <div class="hr"></div>
+  </div>
+  <ion-button style="width:100%" (click) = "requestTutorStatus()">Click Here to Become a Tutor!</ion-button>
+  <div class="gap-30"></div>
+  <div class="gap-30"></div>
+  <div class="gap-30"></div>
+</ion-content>
