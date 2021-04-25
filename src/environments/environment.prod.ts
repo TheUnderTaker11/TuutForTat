@@ -7,6 +7,7 @@ export const environment = {
     projectId: "tuutfortat",
     storageBucket: "tuutfortat.appspot.com",
     messagingSenderId: "244586887978",
-    appId: "1:244586887978:web:2e9c90dc28f8bbe0387c53"
+    appId: "1:244586887978:web:2e9c90dc28f8bbe0387c53",
+    vapidKey: 'BEsnhzZ6PzG2z9Ysksqp2HC0BenwmNC9xae2GRfFVBFp9imnk1HFVPnV2S4hfuY91seYOOyF0ucMrT-iaJvusXQ'
   }
 };

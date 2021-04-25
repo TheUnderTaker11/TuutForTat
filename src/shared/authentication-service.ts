@@ -16,7 +16,7 @@ import { AngularFireDatabase, AngularFireList, AngularFireObject } from '@angula
 
 export class AuthenticationService {
   userData: any; 
-  currentUser: User;
+  public currentUser: User;
   userProviderAdditionalInfo: any;
 
   constructor(

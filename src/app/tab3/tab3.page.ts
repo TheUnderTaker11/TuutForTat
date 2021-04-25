@@ -1,12 +1,15 @@
 import { Component, OnInit, ɵLocaleDataIndex } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from "../../shared/authentication-service";
-import { AlertController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 import { AngularFireAuth } from "@angular/fire/auth";
 import { AngularFireDatabase, AngularFireList, AngularFireObject } from '@angular/fire/database';
 import { ProfileModel } from "../../shared/profile.model";
 import { UserModel } from "../../shared/user.model";
 import { Constants } from 'src/shared/Constants';
+import { MessagingService } from '../services/messaging.service';
+//import { FCM } from '@ionic-native/fcm/ngx';
+import { AngularFireMessaging } from '@angular/fire/messaging';
 
 @Component({
   selector: 'app-tab3',
@@ -15,7 +18,7 @@ import { Constants } from 'src/shared/Constants';
 })
 export class Tab3Page {
 
-  dbUserRef : AngularFireObject<UserModel>;
+  dbUserRef: AngularFireObject<UserModel>;
 
   fireAuth: AngularFireAuth = null;
   userEmail: any = "null";
@@ -25,31 +28,129 @@ export class Tab3Page {
   userID: any = "null";
 
   constructor(
+    private messagingService: MessagingService,
     public router: Router,
     public authService: AuthenticationService,
     public alertController: AlertController,
     public ngFireAuth: AngularFireAuth,
-    private db: AngularFireDatabase
+    private db: AngularFireDatabase,
+    private toastCtrl: ToastController,
+    //private fcm: FCM,
+    private afMessaging: AngularFireMessaging
   ) {
-    var profileData: ProfileModel = authService.getProfileData();
-    this.userEmail = profileData.email;
-    if (profileData.name == "What's your name?") {
-      //var tempArray = this.userEmail.toString().split("@");
-      //this.userName = tempArray[0];
-      this.userName = "Loading...";
-    } else {
-      this.userName = profileData.name;
-    }
-    
-    this.userID = authService.currentUser.uid;
-    this.dbUserRef = this.db.object('/users/' + this.userID.toString());
-    this.userName = localStorage.getItem(Constants.cached_username);
-    this.image = localStorage.getItem(Constants.cached_image);
-    this.phoneNumber = localStorage.getItem(Constants.cached_phone_num);
+
+    this.ngFireAuth.onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in.
+        authService.currentUser = user;
+        this.userID = user.uid;
+        var profileData: ProfileModel = authService.getProfileData();
+        this.userEmail = profileData.email;
+        if (profileData.name == "What's your name?") {
+          //var tempArray = this.userEmail.toString().split("@");
+          //this.userName = tempArray[0];
+          this.userName = "Loading...";
+        } else {
+          this.userName = profileData.name;
+        }
+        console.log("Done loading user!");
+      } else {
+        // No user is signed in.
+        this.userID = null;
+        this.navigateToLogin();
+      }
+
+      this.dbUserRef = this.db.object('/users/' + this.userID.toString());
+      
+      this.userName = localStorage.getItem(Constants.cached_username);
+      this.image = localStorage.getItem(Constants.cached_image);
+      this.phoneNumber = localStorage.getItem(Constants.cached_phone_num);
+    });
+
+    this.listenForMessages();
   }
 
-  getDBUser(){
-    
+
+  listenForMessages() {
+    this.messagingService.getMessages().subscribe(async (msg: any) => {
+      const alert = await this.alertController.create({
+        header: msg.notification.title,
+        subHeader: msg.notification.body,
+        message: msg.data.info,
+        buttons: ['OK'],
+      });
+
+      await alert.present();
+    });
+  }
+  //Old tutorial code
+  /*
+  requestPermission(): Promise<void> {
+    console.log("ABout to ask for permission.");
+    return new Promise<void>(async (resolve) => {
+      console.log("In promise.");
+      if (!Notification) {
+        console.log("Not Notification?");
+        resolve();
+        return;
+      }
+      if (!firebase.messaging.isSupported()) {
+        console.log("Messaging not supported.");
+        resolve();
+        return;
+      }
+      try {
+        console.log("About to attempt.");
+        const messaging = firebase.messaging();
+        await Notification.requestPermission();
+        console.log("Oh MAMA it asked for permission and got it's answer");
+        this.messagingService.requestPermission
+        const token: string = await messaging.getToken();
+        console.log('User notifications token:', token);
+      } catch (err) {
+        // No notifications granted
+      }
+
+      resolve();
+    });
+  }
+*/
+  //Original requestPermission function from tutorial I used
+
+  requestPermission() {
+    this.messagingService.requestPermission().subscribe(
+      async token => {
+        const toast = await this.toastCtrl.create({
+          message: 'Got your token',
+          duration: 2000
+        });
+        toast.present();
+      },
+      async (err) => {
+        console.log(err);
+        const alert = await this.alertController.create({
+          header: 'Error',
+          message: err,
+          buttons: ['OK'],
+        });
+
+        await alert.present();
+      }
+    );
+  }
+
+
+  async deleteToken() {
+    this.messagingService.deleteToken();
+    const toast = await this.toastCtrl.create({
+      message: 'Token removed',
+      duration: 2000
+    });
+    toast.present();
+  }
+
+  getDBUser() {
+
   }
 
   createUser() {
@@ -82,7 +183,7 @@ export class Tab3Page {
     this.presentUsernameChangePrompt();
   }
 
-  editProfilePic(){
+  editProfilePic() {
     this.presentProfilePicChangePrompt();
   }
   editLocation() {
@@ -92,7 +193,7 @@ export class Tab3Page {
     this.presentAlert("Edit Radius", "Change radius (Unlikely app will ACTUALLY use this due to time constraints)", false);
   }
 
-  async updateUsername(newUserName){
+  async updateUsername(newUserName) {
     this.userName = newUserName;
     this.db.object('/users/' + this.userID.toString()).update({
       username: this.userName
@@ -100,7 +201,7 @@ export class Tab3Page {
     localStorage.setItem(Constants.cached_username, newUserName);
   }
 
-  async updateProfilePic(link){
+  async updateProfilePic(link) {
     this.image = link;
     this.db.object('/users/' + this.userID.toString()).update({
       image: this.image
