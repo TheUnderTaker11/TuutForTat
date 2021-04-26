@@ -73,8 +73,13 @@ export class DirectmessagePage implements OnInit {
     DBMessageFormat.content = message.toString();
     DBMessageFormat.sender = localStorage.getItem(Constants.cached_uid).toString();
     DBMessageFormat.time = Date.now() + "";
-    this.db.list<MessageModel>('allmessages/' + localStorage.getItem(Constants.dmid), ref => ref.orderByKey())
-      .push(DBMessageFormat);
+    this.db.list<MessageModel>('allmessages/' + localStorage.getItem(Constants.dmid), ref => ref.orderByKey()).push(DBMessageFormat);
+
+    //window.location.reload();
+    //Instead of reloading the page, just clear the text box and add it to the list!
+    (<HTMLInputElement>document.getElementById("sendmessagebox")).value = "";
+    this.allMessages.push(new MessageEntry(DBMessageFormat.sender, localStorage.getItem(Constants.cached_username), DBMessageFormat.content, localStorage.getItem(Constants.cached_image)));
+    this.scrollToBottom();
   }
   /**
      * Grabs all messages between the 2 users and loads them into an array of MessageEntry objects
@@ -93,8 +98,10 @@ export class DirectmessagePage implements OnInit {
     //var test = messagesDBRef.map(obj => Object.values(obj));
     var firstRun = true;
     messagesDBRef.valueChanges().subscribe(
-      (messages) => {
+      async (messages) => {
         if (firstRun) {
+          //if (true) {
+          console.log("Loading messages");
           messages.forEach((message) => {
             rawMessagesList.push(message);
           });
@@ -102,10 +109,19 @@ export class DirectmessagePage implements OnInit {
           isDone = true;
           firstRun = false;
         } else {
+          //Add a single new message to their list.
           console.log("This log SHOULD mean a new message was recieved. (Either sent by us or the other account)");
-          window.location.reload();
-          //That's right bitch, I just reload the whole ass page each time there is a message.
-          //I've been working on this project 5 for at least 20 hours now and if it works IT WORKS BABY
+          //Reload is the jank way to do it
+          //window.location.reload();
+          //This gives a seamless experince!
+          var messageObj = messages.pop();
+          if (messageObj.sender.toString() != localStorage.getItem(Constants.cached_uid)) {
+            
+            var senderDisplayName = localStorage.getItem(Constants.dm_target_username);
+            var senderProfileImage = this.targetImage;
+            this.allMessages.push(new MessageEntry(messageObj.sender, senderDisplayName, messageObj.content, senderProfileImage));
+            this.scrollToBottom();
+          }
         }
       }
     );
@@ -115,12 +131,18 @@ export class DirectmessagePage implements OnInit {
     }
 
     this.doneLoading = true;
+    this.scrollToBottom();
+  }
+
+  async scrollToBottom() {
     await this.delay(600);
     var objDiv = document.getElementById("messagesDiv");
     objDiv.scrollTop = objDiv.scrollHeight;
   }
 
   sortAndFillMessagesArray(rawMessagesList: MessageModel[]) {
+    //this.doneLoading = false;
+    //this.allMessages.length = 0;
     rawMessagesList.forEach(messageObj => {
       var senderDisplayName: string = null;
       var senderProfileImage: string = null;
@@ -133,6 +155,7 @@ export class DirectmessagePage implements OnInit {
       }
       this.allMessages.push(new MessageEntry(messageObj.sender, senderDisplayName, messageObj.content, senderProfileImage));
     });
+    //this.doneLoading = true;
   }
   async ensureMessagesExist() {
     var messagesDBRef = this.db.object('allmessages/' + localStorage.getItem(Constants.dmid) + "/-1");

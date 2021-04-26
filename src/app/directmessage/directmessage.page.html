@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-icon (click)="redirectToMessages()" name="arrow-back-outline" size="large" style="float:left"></ion-icon>
-    <ion-title style="float:left"><b>{{target_Username}} id={{dm_id}}</b></ion-title>
+    <ion-title style="float:left"><b>{{target_Username}}</b></ion-title>
     <ion-icon (click)="searchDirectMessages()" name="search-sharp" size="large" style="float:right" class="clickable">
     </ion-icon>
   </ion-toolbar>
@@ -24,7 +24,7 @@
       </ion-item>
     </ion-list>
   </div>
-  <ion-input class="messageInput" type="text" placeholder="Type Here..." #messagetosend (keyup.enter)="sendMessage(messagetosend)"></ion-input>
+  <ion-input id="sendmessagebox" class="messageInput" type="text" placeholder="Type Here..." #messagetosend (keyup.enter)="sendMessage(messagetosend)"></ion-input>
   <ion-icon name="send-sharp" size="large" style="float:right" class="clickable" (click)="sendMessage(messagetosend)"
     type="submit"></ion-icon>
 </ion-content>

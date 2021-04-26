@@ -116,8 +116,9 @@ export class Tab3Page {
   }
 */
   //Original requestPermission function from tutorial I used
-
   requestPermission() {
+    this.presentAlert("Not implemented", "Due to time constraints, this feature is not currently enabled, sorry!", false)
+    /*
     this.messagingService.requestPermission().subscribe(
       async token => {
         const toast = await this.toastCtrl.create({
@@ -136,7 +137,7 @@ export class Tab3Page {
 
         await alert.present();
       }
-    );
+    );*/
   }
 
 

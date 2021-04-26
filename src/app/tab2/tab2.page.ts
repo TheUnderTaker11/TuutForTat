@@ -11,6 +11,7 @@ import { Constants } from '../../shared/Constants';
 import { DMsBetweenUsersModel } from '../../shared/dbdmsbetweenusers.model';
 import { DatabaseHandler } from 'src/shared/DatabaseHandler';
 import { MessagingService } from '../services/messaging.service';
+import { MessageModel } from '../directmessage/message.model';
 
 @Component({
   selector: 'app-tab2',
@@ -41,7 +42,6 @@ export class Tab2Page {
     //this.getDMsForUser(authService.currentUser.uid);
     this.loadAllDMs();
     console.log("Tab 2 loaded from constructor!");
-    this.listenForMessages();
   }
 
   /**
@@ -57,48 +57,7 @@ export class Tab2Page {
     }
   }
 
-  listenForMessages() {
-    this.messagingService.getMessages().subscribe(async (msg: any) => {
-      const alert = await this.alertController.create({
-        header: msg.notification.title,
-        subHeader: msg.notification.body,
-        message: msg.data.info,
-        buttons: ['OK'],
-      });
- 
-      await alert.present();
-    });
-  }
 
-  requestPermission() {
-    this.messagingService.requestPermission().subscribe(
-      async token => {
-        const toast = await this.toastCtrl.create({
-          message: 'Got your token',
-          duration: 2000
-        });
-        toast.present();
-      },
-      async (err) => {
-        const alert = await this.alertController.create({
-          header: 'Error',
-          message: err,
-          buttons: ['OK'],
-        });
- 
-        await alert.present();
-      }
-    );
-  }
- 
-  async deleteToken() {
-    this.messagingService.deleteToken();
-    const toast = await this.toastCtrl.create({
-      message: 'Token removed',
-      duration: 2000
-    });
-    toast.present();
-  }
 
   async redirectToDM(id, target_ID) {
     localStorage.setItem(Constants.dmid, id);
@@ -123,7 +82,7 @@ export class Tab2Page {
     var dmsDBRef = this.db.list<DMsBetweenUsersModel>('dmsbetweenusers/' + localStorage.getItem(Constants.cached_uid), ref => ref.orderByKey());
     var firstRun: boolean = true;
     dmsDBRef.valueChanges().subscribe(
-      (dmEntrys) => {
+      async (dmEntrys) => {
         if (dmEntrys == null) {
           var dummy: DMsBetweenUsersModel = new DMsBetweenUsersModel("FAKEDEFAULTUSERID", "0");
           dmsDBRef.set("realtime-write", dummy);
@@ -133,14 +92,51 @@ export class Tab2Page {
           //console.log("Right before forEach DMsBetweenUsersModel");
           this.all_dms = [];
           dmEntrys.forEach(async (dmthing: DMsBetweenUsersModel) => {
+            var messagesDBRef = this.db.list<MessageModel>('allmessages/' + dmthing.dm_index, ref => ref.orderByKey());
+            var firstRun2: boolean = true;
+            messagesDBRef.valueChanges().subscribe(
+              async (messages) => {
+                if (firstRun2) {
+                  var lastMessageObj: MessageModel = messages.pop();
+                  var lastMessageSender: string = lastMessageObj.sender;
+                  var lastMessageContent: string = lastMessageObj.content;
+                  if (lastMessageSender == localStorage.getItem(Constants.cached_uid)) {
+                    lastMessageContent = "You: " + lastMessageContent;
+                  } else {
+                    lastMessageContent = "Them: " + lastMessageContent;
+                  }
+                  var usernameImageArray: string[] = await this.loadUserData(dmthing.target_user);
+                  console.log("Just added user " + dmthing.target_user + " with username " + usernameImageArray[0] + " and DM ID of " + dmthing.dm_index);
+                  this.all_dms.push(new DMListModel(dmthing.target_user, dmthing.dm_index, usernameImageArray[0], usernameImageArray[1], lastMessageContent));
+                  firstRun2 = false;
+                }
+              }
+            );
             //console.log("About to request user data for " + dmthing.target_user);
-            var usernameImageArray: string[] = await this.loadUserData(dmthing.target_user);
-            console.log("Just added user " + dmthing.target_user + " with username " + usernameImageArray[0] + " and DM ID of " + dmthing.dm_index);
-            this.all_dms.push(new DMListModel(dmthing.target_user, dmthing.dm_index, usernameImageArray[0], usernameImageArray[1], "Click to view..."));
+
           });
           //console.log("Right AFTER forEach DMsBetweenUsersModel");
           firstRun = false;
           this.doneLoading = true;
+        } else {
+          var dmModelThing: DMsBetweenUsersModel = dmEntrys.pop();
+          var usernameImageArray: string[] = await this.loadUserData(dmModelThing.target_user);
+          console.log("Just added user " + dmModelThing.target_user + " with username " + usernameImageArray[0] + " and DM ID of " + dmModelThing.dm_index);
+          var foundExistingDM: boolean = false;
+          this.all_dms.forEach(
+            (dmListModelObj) => {
+              if(dmListModelObj.target_id.toString() == dmModelThing.target_user.toString()){
+                dmListModelObj.targets_lastmessage = "New message, click to view...";
+                //Temporary solution to at least inform users that a new message has been recieved
+                this.all_dms.push(new DMListModel(dmModelThing.target_user, dmModelThing.dm_index, "NEW MESSAGE FROM: " + usernameImageArray[0], usernameImageArray[1], "Click to view the new message!"));
+                foundExistingDM = true;
+              }
+            }
+          );
+          //If one doesn't exist, make a new one.
+          if(!foundExistingDM){
+            this.all_dms.push(new DMListModel(dmModelThing.target_user, dmModelThing.dm_index, usernameImageArray[0], usernameImageArray[1], "New Message, click to view..."));
+          }
         }
       }
     );
